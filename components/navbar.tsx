@@ -11,9 +11,6 @@ import {
   Film, 
   Moon, 
   Ticket, 
-  ShieldCheck, 
-  Lock, 
-  Plus, 
   Grid3X3,
   Search
 } from 'lucide-react';
@@ -24,10 +21,8 @@ export const Navbar = () => {
   const pathname = usePathname();
   const { 
     mediaLogs, 
-    isAdmin, 
     setTheaterMode, 
     setTicketModalOpen, 
-    setAddModalOpen,
     setTotoroEasterEggOpen,
     filterState,
     setFilterState
@@ -164,25 +159,6 @@ export const Navbar = () => {
             <Moon className="w-3.5 h-3.5 text-slate-400" />
             <span className="hidden lg:inline text-slate-400 text-[11px]">Spacebar</span>
           </button>
-
-          {/* Admin Action Button / Login */}
-          {isAdmin ? (
-            <button
-              onClick={() => setAddModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 text-black font-semibold text-xs hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/25 active:scale-95"
-            >
-              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span className="hidden sm:inline">Add Title</span>
-            </button>
-          ) : (
-            <Link
-              href="/admin"
-              className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] text-slate-400 hover:text-slate-200 hover:border-white/20 transition-all"
-              title="Admin Login"
-            >
-              <Lock className="w-3.5 h-3.5" />
-            </Link>
-          )}
 
           {/* Minimal Stats Pill */}
           <div className="hidden xl:flex items-center gap-2 pl-2 border-l border-white/[0.08] text-xs text-slate-400">
