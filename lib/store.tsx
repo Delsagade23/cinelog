@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { MediaLog, FilterState } from './types';
 import { INITIAL_MEDIA_LOGS } from './mock-data';
-import { supabase, isSupabaseConfigured } from './supabase/client';
 
 interface CineStoreContextType {
   mediaLogs: MediaLog[];
@@ -74,47 +73,23 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Initial Load: Check Supabase, fallback to localStorage / mock
+  // Initial Load: Read strictly from localStorage
   useEffect(() => {
-    async function loadData() {
+    function loadData() {
       // Check admin session
-      const savedAdmin = localStorage.getItem(ADMIN_SESSION_KEY);
-      if (savedAdmin === 'true') {
-        setIsAdminState(true);
-      }
-
-      if (isSupabaseConfigured && supabase) {
-        try {
-          // Check Supabase auth session
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            setIsAdminState(true);
-          }
-
-          const { data, error } = await supabase
-            .from('media_logs')
-            .select('*')
-            .order('watched_date', { ascending: false });
-
-          if (!error && data && data.length > 0) {
-            setMediaLogs(data);
-            setActiveMedia(data[0]);
-            setIsLoading(false);
-            return;
-          }
-        } catch (err) {
-          console.warn('Could not fetch from Supabase, loading local state', err);
-        }
-      }
-
-      // Local storage fallback
       try {
+        const savedAdmin = localStorage.getItem(ADMIN_SESSION_KEY);
+        if (savedAdmin === 'true') {
+          setIsAdminState(true);
+        }
+
         const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (saved !== null) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) {
+            // Respect whatever is in localStorage, even an empty array []
             setMediaLogs(parsed);
-            setActiveMedia(parsed[0] || null);
+            setActiveMedia(parsed.length > 0 ? parsed[0] : null);
             setIsLoading(false);
             return;
           }
@@ -123,24 +98,19 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
         console.warn('Error reading localStorage', err);
       }
 
-      // Default mock
+      // First time ever visiting: populate initial seed and persist to localStorage
       setMediaLogs(INITIAL_MEDIA_LOGS);
       setActiveMedia(INITIAL_MEDIA_LOGS[0] || null);
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_MEDIA_LOGS));
+      } catch (err) {
+        console.warn('Failed to save initial seed to localStorage', err);
+      }
       setIsLoading(false);
     }
 
     loadData();
   }, []);
-
-  // Save to localStorage whenever mediaLogs change
-  const persistLocally = (logs: MediaLog[]) => {
-    setMediaLogs(logs);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(logs));
-    } catch (err) {
-      console.warn('Failed to save to localStorage', err);
-    }
-  };
 
   const addLog = async (newLogData: Omit<MediaLog, 'id' | 'created_at'>) => {
     const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `log-${Date.now()}`;
@@ -149,15 +119,6 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
       id,
       created_at: new Date().toISOString()
     };
-
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { error } = await supabase.from('media_logs').insert([newLog]);
-        if (error) console.error('Supabase insert error:', error);
-      } catch (e) {
-        console.error('Supabase insert exception:', e);
-      }
-    }
 
     setMediaLogs(prev => {
       const updated = [newLog, ...prev];
@@ -172,15 +133,6 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateLog = async (id: string, updatedFields: Partial<MediaLog>) => {
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { error } = await supabase.from('media_logs').update(updatedFields).eq('id', id);
-        if (error) console.error('Supabase update error:', error);
-      } catch (e) {
-        console.error('Supabase update exception:', e);
-      }
-    }
-
     setMediaLogs(prev => {
       const updated = prev.map(item => item.id === id ? { ...item, ...updatedFields } : item);
       try {
@@ -199,15 +151,6 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteLog = async (id: string) => {
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const { error } = await supabase.from('media_logs').delete().eq('id', id);
-        if (error) console.error('Supabase delete error:', error);
-      } catch (e) {
-        console.error('Supabase delete exception:', e);
-      }
-    }
-
     setMediaLogs(prev => {
       const updated = prev.filter(item => item.id !== id);
       try {
@@ -230,8 +173,13 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const resetToSeed = () => {
-    persistLocally(INITIAL_MEDIA_LOGS);
+    setMediaLogs(INITIAL_MEDIA_LOGS);
     setActiveMedia(INITIAL_MEDIA_LOGS[0] || null);
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_MEDIA_LOGS));
+    } catch (err) {
+      console.warn('Failed to save to localStorage', err);
+    }
   };
 
   return (
@@ -263,7 +211,7 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
         updateLog,
         deleteLog,
         resetToSeed,
-        isSupabaseConnected: isSupabaseConfigured
+        isSupabaseConnected: false
       }}
     >
       {children}
