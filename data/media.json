@@ -1,0 +1,122 @@
+[
+  {
+    "id": "one-piece-film-red-2022",
+    "tmdb_id": 900667,
+    "title": "one piece movie RED",
+    "media_type": "anime",
+    "release_year": 2022,
+    "runtime_minutes": 120,
+    "poster_url": "https://image.tmdb.org/t/p/w780/8ibfhe4P7rhmn3lrPhOZzIJHA2B.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/original/wghKvEjM7UzQzQcKnGbDjOyQO13.jpg",
+    "director": "Echiro Oda",
+    "cast": [
+      "Mayumi Tanaka",
+      "Kaori Nazuka",
+      "Ado",
+      "Shuichi Ikeda",
+      "Kenjiro Tsuda"
+    ],
+    "genres": [
+      "Animation",
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "watched_date": "2024-03-01",
+    "personal_rating": 9.6,
+    "gut_reaction": "One Piece Film: Red diverges from traditional shōnen formulas by staging an operatic musical tragedy through Uta's mesmerizing dreamscape.",
+    "full_review": "One Piece Film: Red diverges from traditional shōnen formulas by staging an operatic musical tragedy through Uta's mesmerizing dreamscape. Ado's vocal power carries the emotional weight of the entire narrative, turning every concert performance into an explosive spectacle. Shanks and the Red Hair Pirates finally delivering on decades of built-up mythos makes the climax undeniably legendary.",
+    "mood_coordinates": {
+      "x": 80,
+      "y": 75
+    },
+    "custom_tags": [
+      "Mind-Melting",
+      "Cinema",
+      "Anime Masterpiece",
+      "Must Watch"
+    ],
+    "dominant_color": "#dc2626",
+    "rewatch_count": 2,
+    "created_at": "2024-03-01T12:00:00Z"
+  },
+  {
+    "id": "67a80b33-912c-4933-a8fe-30018872c606",
+    "tmdb_id": 129,
+    "title": "Spirited Away",
+    "media_type": "anime",
+    "release_year": 2001,
+    "runtime_minutes": 125,
+    "poster_url": "https://image.tmdb.org/t/p/w780/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/original/Ab8mkHmkYADjU7wQiOkia9BzGvS.jpg",
+    "director": "Hayao Miyazaki",
+    "cast": [
+      "Rumi Hiiragi",
+      "Miyu Irino",
+      "Mari Natsuki",
+      "Takashi Naito"
+    ],
+    "genres": [
+      "Animation",
+      "Family",
+      "Fantasy"
+    ],
+    "watched_date": "2023-12-25",
+    "personal_rating": 9.4,
+    "gut_reaction": "Miyazaki’s magnum opus operates with dream logic so flawless that every spirit, radish monster, and soot sprite feels grounded in ancient truth.",
+    "full_review": "Miyazaki’s magnum opus operates with dream logic so flawless that every spirit, radish monster, and soot sprite feels grounded in ancient truth. Joe Hisaishi’s \"One Summer’s Day\" melody unlocks immediate tears. A film that cleanses the spirit every time you watch it.",
+    "mood_coordinates": {
+      "x": 35,
+      "y": 95
+    },
+    "custom_tags": [
+      "Comfort Rewatch",
+      "Mythic Wonder",
+      "Studio Ghibli",
+      "Masterpiece"
+    ],
+    "dominant_color": "#ec4899",
+    "rewatch_count": 8,
+    "created_at": "2023-12-26T18:00:00Z"
+  },
+  {
+    "id": "ab334455-7788-4999-1122-aabbccddeeff",
+    "tmdb_id": 569094,
+    "title": "Spider-Man: Across the Spider-Verse",
+    "media_type": "movie",
+    "release_year": 2023,
+    "runtime_minutes": 140,
+    "poster_url": "https://image.tmdb.org/t/p/w780/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/original/4HodYYKEIsGOdinkGi2Ucz6X9i0.jpg",
+    "director": "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson",
+    "cast": [
+      "Shameik Moore",
+      "Hailee Steinfeld",
+      "Oscar Isaac",
+      "Daniel Kaluuya"
+    ],
+    "genres": [
+      "Animation",
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
+    "watched_date": "2023-06-03",
+    "personal_rating": 9.5,
+    "gut_reaction": "The Gwen Stacy watercolor mood-shifting world in the opening 20 minutes alone is more artistically daring than the last decade of studio animation.",
+    "full_review": "The Gwen Stacy watercolor mood-shifting world in the opening 20 minutes alone is more artistically daring than the last decade of studio animation. Daniel Kaluuya’s Hobie Brown (Spider-Punk) stealing every scene with torn-paper punk aesthetics is cinema at its most joyful.",
+    "mood_coordinates": {
+      "x": 80,
+      "y": 72
+    },
+    "custom_tags": [
+      "Visual Overload",
+      "Animation Revolution",
+      "Kinetic Art",
+      "Must Experience"
+    ],
+    "dominant_color": "#8b5cf6",
+    "rewatch_count": 3,
+    "created_at": "2023-06-04T16:00:00Z"
+  }
+]

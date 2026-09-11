@@ -6,6 +6,20 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 // Curated offline mock search dictionary for instant seamless testing
 const POPULAR_SEARCH_FALLBACK: TMDbDetails[] = [
   {
+    id: 900667,
+    title: 'One Piece Film Red',
+    media_type: 'anime',
+    release_year: 2022,
+    runtime_minutes: 120,
+    poster_url: 'https://image.tmdb.org/t/p/w780/8ibfhe4P7rhmn3lrPhOZzIJHA2B.jpg',
+    backdrop_url: 'https://image.tmdb.org/t/p/original/wghKvEjM7UzQzQcKnGbDjOyQO13.jpg',
+    director: 'Echiro Oda',
+    cast: ['Mayumi Tanaka', 'Kaori Nazuka', 'Ado', 'Shuichi Ikeda'],
+    genres: ['Animation', 'Action', 'Adventure', 'Fantasy'],
+    overview: 'A new adventure begins for Luffy and his crew when mysterious pop superstar Uta unveils her identity.',
+    vote_average: 8.6
+  },
+  {
     id: 693134,
     title: 'Dune: Part Two',
     media_type: 'movie',
