@@ -136,14 +136,30 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.logs) && data.logs.length > 0) {
-          setMediaLogs(data.logs);
+          // Read local storage to ensure any user-added movies are NOT deleted on refresh
+          const localStr = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_STORAGE_KEY) : null;
+          let combinedLogs: MediaLog[] = data.logs;
+
+          if (localStr) {
+            try {
+              const localParsed: MediaLog[] = JSON.parse(localStr);
+              if (Array.isArray(localParsed) && localParsed.length > 0) {
+                const serverIdSet = new Set(data.logs.map((m: MediaLog) => m.id));
+                const localOnly = localParsed.filter(m => !serverIdSet.has(m.id));
+                // Put user-added entries first, followed by existing entries
+                combinedLogs = [...localOnly, ...data.logs];
+              }
+            } catch (e) {}
+          }
+
+          setMediaLogs(combinedLogs);
           setActiveMedia(prev => {
-            if (!prev) return data.logs[0] || null;
-            const found = data.logs.find((m: MediaLog) => m.id === prev.id);
-            return found || data.logs[0] || null;
+            if (!prev) return combinedLogs[0] || null;
+            const found = combinedLogs.find((m: MediaLog) => m.id === prev.id);
+            return found || combinedLogs[0] || null;
           });
           try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data.logs));
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(combinedLogs));
           } catch (e) {
             console.warn('LocalStorage save failed', e);
           }
@@ -152,15 +168,6 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (err) {
       console.warn('Could not sync with /api/media, using cached store', err);
-    }
-
-    // 3. Fallback to INITIAL_MEDIA_LOGS
-    setMediaLogs(INITIAL_MEDIA_LOGS);
-    setActiveMedia(INITIAL_MEDIA_LOGS[0] || null);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_MEDIA_LOGS));
-    } catch (e) {
-      console.warn('LocalStorage save failed', e);
     }
   }, []);
 

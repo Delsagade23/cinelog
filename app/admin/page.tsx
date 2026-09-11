@@ -29,7 +29,8 @@ import {
   X,
   RefreshCw,
   Flame,
-  Heart
+  Heart,
+  Database
 } from 'lucide-react';
 import { Navbar } from '@/components/navbar';
 import { useCineStore } from '@/lib/store';
@@ -47,8 +48,11 @@ export default function AdminPage() {
     isAdmin, 
     setIsAdmin, 
     setAddModalOpen,
-    setEditingMedia
+    setEditingMedia,
+    isSupabaseConnected
   } = useCineStore();
+
+  const [showDbSetup, setShowDbSetup] = useState(false);
 
   // Auth form state
   const [email, setEmail] = useState('');
@@ -314,6 +318,70 @@ export default function AdminPage() {
         {/* Main Admin Content: Custom Poster Studio & Management Grid */}
         {isAdmin ? (
           <section className="space-y-6">
+
+            {/* Cloud Sync Database Status Banner */}
+            <div className={`p-4 sm:p-5 rounded-2xl border transition-all ${
+              isSupabaseConnected 
+                ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300' 
+                : 'bg-amber-950/20 border-amber-500/30 text-amber-300'
+            }`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${
+                    isSupabaseConnected 
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' 
+                      : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                  }`}>
+                    <Database className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider">
+                        {isSupabaseConnected ? '🟢 Supabase Cloud Database Connected' : '🟡 Local Storage Mode Active'}
+                      </span>
+                      {isSupabaseConnected && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
+                          Live Global Sync
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-300 mt-0.5">
+                      {isSupabaseConnected 
+                        ? 'All added, edited, or deleted titles are synced in real-time across all visitors on any device.' 
+                        : 'Your added movies are saved locally in this browser. To make them instantly visible to other visitors on the web, connect Supabase.'}
+                    </p>
+                  </div>
+                </div>
+
+                {!isSupabaseConnected && (
+                  <button
+                    onClick={() => {
+                      sound.playTactileClick(700);
+                      setShowDbSetup(prev => !prev);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold whitespace-nowrap transition-all self-start sm:self-center"
+                  >
+                    {showDbSetup ? 'Hide Setup' : 'Connect Global Cloud Sync'}
+                  </button>
+                )}
+              </div>
+
+              {/* Expandable Setup Instructions */}
+              {!isSupabaseConnected && showDbSetup && (
+                <div className="mt-4 pt-4 border-t border-amber-500/20 space-y-3 text-xs text-slate-300">
+                  <p className="font-semibold text-white">How to connect Supabase in 2 minutes so all visitors see your updates:</p>
+                  <ol className="list-decimal list-inside space-y-2 text-slate-400">
+                    <li>Create a free project at <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-amber-400 underline">supabase.com</a>.</li>
+                    <li>Go to <strong>SQL Editor</strong> in your Supabase dashboard and run the schema inside <code className="px-1.5 py-0.5 rounded bg-black/40 text-amber-300 font-mono">supabase/schema.sql</code>.</li>
+                    <li>Add your project credentials to your <strong>.env.local</strong> or Vercel Environment Variables:
+                      <pre className="mt-2 p-3 rounded-xl bg-black/70 border border-white/10 text-amber-300 font-mono text-[11px] overflow-x-auto select-all">
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co&#10;NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+                      </pre>
+                    </li>
+                  </ol>
+                </div>
+              )}
+            </div>
             
             {/* Toolbar Header */}
             <div className="glass-panel p-5 sm:p-6 rounded-3xl border border-white/[0.08] bg-[#0c0e14]/95 space-y-4">
