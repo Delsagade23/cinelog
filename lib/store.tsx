@@ -121,6 +121,22 @@ export const CineStoreProvider = ({ children }: { children: ReactNode }) => {
             console.warn('LocalStorage save failed', e);
           }
           return;
+        } else if (!error && data && Array.isArray(data) && data.length === 0) {
+          // If Supabase table exists but is currently empty, seed it with INITIAL_MEDIA_LOGS
+          try {
+            for (const item of INITIAL_MEDIA_LOGS) {
+              const { cast, ...rest } = item;
+              await supabase.from('media_logs').insert([{ ...rest, cast_members: cast || [] }]);
+            }
+          } catch (seedErr) {
+            console.warn('Supabase auto-seed warning:', seedErr);
+          }
+          setMediaLogs(INITIAL_MEDIA_LOGS);
+          setActiveMedia(INITIAL_MEDIA_LOGS[0] || null);
+          try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_MEDIA_LOGS));
+          } catch (e) {}
+          return;
         }
       } catch (err) {
         console.warn('Supabase fetch failed, falling back to server API', err);

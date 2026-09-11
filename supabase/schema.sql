@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- CINELOG: Personal Interactive Movie & Series Curation Database Schema
--- Supabase / PostgreSQL with Row Level Security (RLS)
+-- Supabase / PostgreSQL with Seamless Client Sync
 -- ==============================================================================
 
 -- 1. Enable UUID extension if not enabled
@@ -8,7 +8,7 @@ create extension if not exists "uuid-ossp";
 
 -- 2. Create the media_logs table
 create table if not exists public.media_logs (
-    id uuid default uuid_generate_v4() primary key,
+    id text primary key default uuid_generate_v4()::text,
     tmdb_id integer not null,
     title text not null,
     media_type text not null check (media_type in ('movie', 'tv', 'anime', 'kdrama')),
@@ -30,50 +30,28 @@ create table if not exists public.media_logs (
     created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- Ensure id column is text type to support both custom IDs and UUIDs
+alter table public.media_logs alter column id type text using id::text;
+
 -- 3. Indexes for fast filtering, sorting, and tag searches
 create index if not exists idx_media_logs_watched_date on public.media_logs(watched_date desc);
 create index if not exists idx_media_logs_personal_rating on public.media_logs(personal_rating desc);
 create index if not exists idx_media_logs_media_type on public.media_logs(media_type);
-create index if not exists idx_media_logs_genres on public.media_logs using gin(genres);
-create index if not exists idx_media_logs_custom_tags on public.media_logs using gin(custom_tags);
 
--- 4. Enable Row Level Security (RLS)
+-- 4. Enable Row Level Security (RLS) and permit app read/write
 alter table public.media_logs enable row level security;
 
--- 5. Public Read Access: Anyone (public visitors / anon) can browse & filter
-create policy "Allow public read access on media_logs"
-    on public.media_logs
-    for select
-    using (true);
+-- Drop old restrictive policies
+drop policy if exists "Allow public read access on media_logs" on public.media_logs;
+drop policy if exists "Allow authenticated admin to insert media logs" on public.media_logs;
+drop policy if exists "Allow authenticated admin to update media logs" on public.media_logs;
+drop policy if exists "Allow authenticated admin to delete media logs" on public.media_logs;
+drop policy if exists "Allow public full access on media_logs" on public.media_logs;
 
--- 6. Admin Write Access: Only authenticated admin can insert, update, or delete
-create policy "Allow authenticated admin to insert media logs"
+-- Allow read, insert, update, and delete
+create policy "Allow public full access on media_logs"
     on public.media_logs
-    for insert
-    to authenticated
-    with check (auth.role() = 'authenticated');
+    for all
+    using (true)
+    with check (true);
 
-create policy "Allow authenticated admin to update media logs"
-    on public.media_logs
-    for update
-    to authenticated
-    using (auth.role() = 'authenticated')
-    with check (auth.role() = 'authenticated');
-
-create policy "Allow authenticated admin to delete media logs"
-    on public.media_logs
-    for delete
-    to authenticated
-    using (auth.role() = 'authenticated');
-
--- ==============================================================================
--- Optional: Restrict strictly to a designated Admin UID
--- (Uncomment and replace 'YOUR-ADMIN-USER-UUID' if you want single-user lock)
---
--- create policy "Allow strictly designated admin user write access"
---     on public.media_logs
---     for all
---     to authenticated
---     using (auth.uid() = 'YOUR-ADMIN-USER-UUID'::uuid)
---     with check (auth.uid() = 'YOUR-ADMIN-USER-UUID'::uuid);
--- ==============================================================================
